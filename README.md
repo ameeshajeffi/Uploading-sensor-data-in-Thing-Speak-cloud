@@ -72,66 +72,37 @@ Automatically act on your data and communicate using third-party services like T
 
 # PROGRAM:
 ```
-#include"ThingSpeak.h"
-#include<WiFi.h>
-#include "DHT.h"
+const int trigPin = 9;
+const int echoPin = 10;
 
-char ssid[]="GalaxyA30sBA5D";
-char pass[]="0123456789";
-
-const int t=23;
-WiFiClient client;
-DHT dht(23, DHT11);
-
-unsigned long myChannelField = 2495546;
-const int ChannelField1 = 1 ;
-const int ChannelField2 = 2 ;
-const char *myWriteAPIKey="37XGJVZMYOX5OKPI";
-
-void setup()
-{
-  Serial.begin(115200);
-  pinMode (t,OUTPUT);
-  WiFi.mode(WIFI_STA);
-  ThingSpeak.begin(client);
-  dht.begin();
-  delay(1000);
+long duration;
+int distance;
+void setup() {
+pinMode(trigPin, OUTPUT);
+pinMode(echoPin, INPUT);
+Serial.begin(9600);
 }
 
-void loop()
+void loop() 
 {
-  if(WiFi.status()!=WL_CONNECTED)
-  {
-    Serial.print("Attempting to connet to SSID: "); 
-    Serial.println(ssid);
-    while(WiFi.status() != WL_CONNECTED)
-    {
-      WiFi.begin(ssid, pass);
-      Serial.print(".");
-      delay(1000);
-    }
-    Serial.println("\nConnected");
-  }
-  float temperature = dht.readTemperature();
-  Serial.print("Temperature: ");
-  Serial.println(temperature);
-  Serial.print(" *C");
-  ThingSpeak.writeField(myChannelField, ChannelField1, temperature, myWriteAPIKey);
- 
-  float humidity = dht.readHumidity();
-  Serial.print("Humidity: ");
-  Serial.println(humidity);
-  Serial.print(" *C");
-  ThingSpeak.writeField(myChannelField, ChannelField2, humidity, myWriteAPIKey);
-  delay(100);
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  duration = pulseIn(echoPin, HIGH);
+  distance= duration*0.034/2;
+  Serial.print("Distance: ");
+  Serial.println(distance);
 }
 ```
 # CIRCUIT DIAGRAM:
-![322834836-b93f4d6c-5999-48b1-9c6b-a27bcbd406a2](https://github.com/user-attachments/assets/2fce6384-ed8e-40d1-ab28-53cb95215ecb)
+
+![280510965-f82593fe-4135-4d47-a420-319983022fd4](https://github.com/user-attachments/assets/bca3ab19-587f-4e31-9915-612120438d52)
 
 # OUTPUT:
 
-![319615223-35b186ca-c6c9-4212-a53f-6bbaec56ef25](https://github.com/user-attachments/assets/91e4f3fc-0750-4615-875a-d005396b5018)
+![280510981-eba0010e-cb59-4442-aabf-690ac8937bdc](https://github.com/user-attachments/assets/c63a0049-cc8c-4800-8b55-e40561fee2fb)
 
 # RESULT:
 
