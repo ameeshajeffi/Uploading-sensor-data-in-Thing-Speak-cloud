@@ -1,3 +1,7 @@
+## EXP 3
+# Name:Ameesha Jeffi
+# Reg No:212223220007
+
 # Uploading temperature sensor data in Thing Speak cloud
 
 # AIM:
