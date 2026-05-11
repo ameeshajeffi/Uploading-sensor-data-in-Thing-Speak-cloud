@@ -75,37 +75,73 @@ Automatically act on your data and communicate using third-party services like T
 
 # PROGRAM:
 ```
-const int trigPin = 9;
-const int echoPin = 10;
+#include"ThingSpeak.h"
+#include<WiFi.h>
+#include"DHT.h"
 
-long duration;
-int distance;
+char ssid[]="SEC_IOT";
+char pass[]="sec@3000";
+WiFiClient client;
+
+const int out=2;
+float temperature=0;
+float humidity=0;
+DHT dht(out,DHT11);
+
+unsigned long myChannelField=2709734;
+const int TemperatureField=1;
+const int HumidityField=2;
+const char* myWriteAPIKey="YQPJWK6JM6YCH3G5";
 void setup() {
-pinMode(trigPin, OUTPUT);
-pinMode(echoPin, INPUT);
-Serial.begin(9600);
+  // put your setup code here, to run once:
+  Serial.begin(115200);
+  ThingSpeak.begin(client);
+  dht.begin();
+  pinMode(out,INPUT);
 }
 
-void loop() 
-{
-  digitalWrite(trigPin, LOW);
-  delayMicroseconds(2);
-  digitalWrite(trigPin, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(trigPin, LOW);
-  duration = pulseIn(echoPin, HIGH);
-  distance= duration*0.034/2;
-  Serial.print("Distance: ");
-  Serial.println(distance);
+void loop() {
+  // put your main code here, to run repeatedly:
+  if(WiFi.status() != WL_CONNECTED)
+  {
+    Serial.print("Attempting to conect to SSID: ");
+    Serial.println(ssid);
+    while(WiFi.status()!=WL_CONNECTED)
+    {
+      WiFi.begin(ssid,pass);
+      Serial.print(".");
+      delay(5000);
+
+    }
+    Serial.println("\nConnected.");
+  }
+  float temperature=dht.readTemperature();
+  float humidity=dht.readHumidity();
+
+  Serial.print("Temperature: ");
+  Serial.print(temperature);
+  Serial.println(" *C");
+
+  Serial.print("Humidity ");
+  Serial.print(humidity);
+  Serial.println(" g.m-3");
+
+  ThingSpeak.setField(TemperatureField, temperature);
+  ThingSpeak.setField(HumidityField, humidity);
+  ThingSpeak.writeFields(myChannelField,myWriteAPIKey);
+  delay(5000);
 }
+
 ```
 # CIRCUIT DIAGRAM:
 
-![280510965-f82593fe-4135-4d47-a420-319983022fd4](https://github.com/user-attachments/assets/bca3ab19-587f-4e31-9915-612120438d52)
+<img width="1200" height="1600" alt="temp sensor" src="https://github.com/user-attachments/assets/ad4c5d1b-ab33-43ae-ba67-f0c31289514e" />
+
 
 # OUTPUT:
 
-![280510981-eba0010e-cb59-4442-aabf-690ac8937bdc](https://github.com/user-attachments/assets/c63a0049-cc8c-4800-8b55-e40561fee2fb)
+<img width="1912" height="961" alt="image" src="https://github.com/user-attachments/assets/b3ccbe1a-c5f3-4b8e-b799-1319fe488d61" />
+
 
 # RESULT:
 
